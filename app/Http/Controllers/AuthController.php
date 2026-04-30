@@ -23,28 +23,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
 
-    $timer = now();
-        $validated = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string'
-        ]);
-
-        $user = User::where('email', $validated['email'])->first();
-
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-        $elapsed = now()->diffInSeconds($timer);
-        logger()->info("Login process took {$elapsed} seconds.");   
-
-
-        return response()->json([
-            'user' => $user,
-            'access_token' => $token,
-            'token_type' => 'Bearer'
-        ]);
+    
     }
 
     /**
