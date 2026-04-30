@@ -1,0 +1,35 @@
+@access_token = "25|b8IeYkKFtU8cR5meDdJ2QLKRp1Wh5F3FTROlBqFRecaf400a"
+
+### Registro
+POST http://localhost:8000/api/auth/register
+
+Content-Type: application/json
+
+{
+    "name": "Manoel",
+    "email": "chico@gmail.com",
+    "password": "password123",
+    "password_confirmation":"password123"
+}
+
+### Login
+POST http://localhost:8000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "password"
+}
+
+
+### Me
+GET http://localhost:8000/api/auth/me
+Accept: application/json
+
+Authorization: 'Bearer 25|b8IeYkKFtU8cR5meDdJ2QLKRp1Wh5F3FTROlBqFRecaf400a'
+
+
+### Logout
+POST http://localhost:8000/api/auth/logout
+Accept: application/json
+Authorization: 'Bearer 26|zmgV1G8aNuFNU7azgcOKYAykPyUdJJn9rv9M983Tbfb2e36d'    
