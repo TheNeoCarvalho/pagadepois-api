@@ -17,6 +17,14 @@ class AuthController extends Controller
             'password_confirmation' => 'required|string|min:8',
         ]);
 
+        $userExist = User::where('email', $validatedData['email'])->first();
+
+        if ($userExist) {
+            return response()->json([
+                'message' => 'O email já está cadastrado, use outro email!'
+            ], 400);
+        }
+
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
@@ -26,13 +34,9 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'User registered successfully',
+            'message' => 'Usuário registrado com sucesso!',
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ], 201);
-
-        return response()->json([
-            'message' => $validatedData,
         ], 201);
     }
 
@@ -46,21 +50,21 @@ class AuthController extends Controller
         $user = User::where('email', $validatedData['email'])->first();
 
         if (!$user || !Hash::check($validatedData['password'], $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Usuário/senha não encontrados!'], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Login successful',
+            'message' => 'Login realizado com sucesso!',
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ]);
+        ], 200);
     }
 
     public function me(Request $request)
     {
-        return response()->json($request->user());
+        return response()->json($request->user(), 200);
     }
 
     public function logout(Request $request)
@@ -68,7 +72,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logout successful'
-        ]);
+            'message' => 'Logout realizado com sucesso!'
+        ], 200);
     }
 }
