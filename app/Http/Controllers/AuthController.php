@@ -9,94 +9,71 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function me(Request $request)
-    {
-        return response()->json($request->user());
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function login(Request $request)
-    {
-
-    
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function register(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:100|min:3',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:8',
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required|string|min:8',
         ]);
 
-        $userExist = User::where('email', $validated['email'])->first();
+        $userExist = User::where('email', $validatedData['email'])->first();
 
-        if($userExist){
+        if ($userExist) {
             return response()->json([
                 'message' => 'O email já está cadastrado, use outro email!'
             ], 400);
         }
 
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
         ]);
-        
-        $token = $user->createToken('auth_token')->plainTextToken();
-        
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            'message' => 'Usuário criado com sucesso!',
+            'message' => 'Usuário registrado com sucesso!',
             'access_token' => $token,
-            'token_type' => 'Bearer'
-            ], 201);
-            
+            'token_type' => 'Bearer',
+        ], 201);
     }
 
-    /**
-     * Logout the authenticated user.
-     */
+    public function login(Request $request)
+    {
+        $validatedData = $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        $user = User::where('email', $validatedData['email'])->first();
+
+        if (!$user || !Hash::check($validatedData['password'], $user->password)) {
+            return response()->json(['message' => 'Usuário/senha não encontrados!'], 401);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login realizado com sucesso!',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ], 200);
+    }
+
+    public function me(Request $request)
+    {
+        return response()->json($request->user(), 200);
+    }
+
     public function logout(Request $request)
     {
-    }
+        $request->user()->currentAccessToken()->delete();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json([
+            'message' => 'Logout realizado com sucesso!'
+        ], 200);
     }
 }
