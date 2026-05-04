@@ -23,7 +23,7 @@ class AuthController extends Controller
         if ($userExist) {
             return response()->json([
                 'message' => 'O email já está cadastrado, use outro email!'
-            ], 400);
+            ], 400, [], JSON_UNESCAPED_UNICODE);
         }
 
         $user = User::create([
@@ -38,7 +38,7 @@ class AuthController extends Controller
             'message' => 'Usuário registrado com sucesso!',
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ], 201);
+        ], 201, [], JSON_UNESCAPED_UNICODE);
     }
 
     public function login(Request $request)
@@ -51,7 +51,7 @@ class AuthController extends Controller
         $user = User::where('email', $validatedData['email'])->first();
 
         if (!$user || !Hash::check($validatedData['password'], $user->password)) {
-            return response()->json(['message' => 'Usuário/senha não encontrados!'], 401);
+            return response()->json(['message' => 'Usuário/senha não encontrados!'], 401, [], JSON_UNESCAPED_UNICODE);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -60,7 +60,7 @@ class AuthController extends Controller
             'message' => 'Login realizado com sucesso!',
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ], 200);
+        ], 200, [], JSON_UNESCAPED_UNICODE);
     }
 
     public function me(Request $request)
@@ -74,6 +74,6 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Logout realizado com sucesso!'
-        ], 200);
+        ], 200, [], JSON_UNESCAPED_UNICODE);
     }
 }
