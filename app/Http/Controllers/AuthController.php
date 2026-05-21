@@ -13,7 +13,7 @@ class AuthController extends Controller
     //Retorna dados do usuário logado
     public function me(Request $request)
     {
-        return response()->json($request->user());
+        return response()->json(Auth::user());
     }
 
     //Faz o login 
