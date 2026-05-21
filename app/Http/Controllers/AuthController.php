@@ -53,7 +53,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8'
         ]);
 
-        $userExist = User::where('email', $validatedData['email'])->first();
+        $userExist = User::where('email', $validated['email'])->first();
 
         if ($userExist) {
             return response()->json([
